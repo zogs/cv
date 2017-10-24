@@ -1,0 +1,9 @@
+{% block content %}
+<div id="contact-flashs" class='flashs'></div>
+<form class="contact" action="{{ app.url_generator.generate("send_contact") }}">
+	<textarea name="content" cols="30" rows="10" placeholder="Votre message :)" required="required"></textarea>
+	<input type="email" name="guest" placeholder="Une adresse où vous répondre !" required="required">
+	<input type="hidden" name="csrf" value="{{ csrf }}">
+	<button type="submit">Envoyer</button>
+</form>
+{% endblock %}

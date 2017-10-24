@@ -1,0 +1,247 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    {# favicon #}
+    <link rel="apple-touch-icon" sizes="57x57" href="images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="images/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="images/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    {# /favicon #}
+
+    <link href="http://fonts.googleapis.com/css?family=Rokkitt" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Sirin+Stencil" rel="stylesheet" type="text/css" />
+    <link href="css/reset.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <title>CV</title>
+</head>
+<body>
+    <header id="header-canvas">
+        <img id="mugshot" src="images/mugshot.jpg" alt="" width='270px' height="203">
+        <img id="macron" src="images/macron.jpg" alt="" >
+        <img id="jcvd" src="images/jcvd.jpg" alt="" >
+    </header>
+    <nav class="main-nav">
+        <ul>
+            <li {% if pagename == 'home' %}class="active"{% endif %}><a href="#home" data-target="home">Home</a></li>
+            <li {% if pagename == 'projects' %}class="active"{% endif %}><a href="#projects" data-target="projects">Projets</a></li>
+            <li {% if pagename == 'contact' %}class="active"{% endif %}><a href="#contact" data-target="contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    {% block subnav %}
+    {% endblock  %}
+
+    <div class="contents">
+
+        <div class='content displayed' id="content-home">
+            {% include 'home.html.twig' %}
+        </div>
+
+        <div class='content' id="content-projects">
+            {% include 'projects.html.twig' %}
+        </div>
+
+        <div class='content' id="content-contact">
+            {% include 'contact.html.twig' %}
+        </div>
+    {% block content %}
+    {% endblock %}        
+    </div>
+
+    {% block footer %}
+    <footer class="footer">
+    </footer>
+    {% endblock %}
+
+    {% block javascript %}
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/swfobject2.2.min.js"></script>
+    <script type="text/javascript" src="js/pillUp.js"></script>
+    <script type="text/javascript" src="js/canvas.pointiller.js"></script>
+    <script type="text/javascript" src="js/p5.min.js"></script>
+    <script type="text/javascript" src="js/particles.js"></script>
+    {% endblock  %}
+    
+    <script type="text/javascript">
+
+
+    var mugshot = document.querySelector('img#mugshot');
+    var macron = document.querySelector('img#macron');
+    var jcvd = document.querySelector('img#jcvd');
+
+    console.log(mugshot,mugshot.width,mugshot.height);
+    console.log(macron,mugshot.width,mugshot.height);
+    console.log(jcvd,mugshot.width,mugshot.height);
+
+    // get mugshot img points
+    var pointiller = new Pointiller(mugshot.width,mugshot.height);
+    pointiller.addImage(mugshot,mugshot.width,mugshot.height);
+    pointiller.excludeColor([255,255,255],10);
+    var points_home = pointiller.toPoints(3);
+
+    // debug
+    //var canvas = pointiller.getCanvas();
+    //document.querySelector('footer').append(canvas);
+
+    // get projects points
+    var pointiller = new Pointiller(macron.width,macron.height);
+    pointiller.clear().addImage(macron,macron.width, macron.height);
+    pointiller.excludeColor([255,255,255],50);
+    var points_projects = pointiller.toPoints(3);
+    
+    // get contact points
+    var pointiller = new Pointiller(jcvd.width,jcvd.height);
+    pointiller.clear().addImage(jcvd,jcvd.width, jcvd.height);
+    pointiller.excludeColor([255,255,255],50);
+    var points_contact = pointiller.toPoints(3);
+
+
+    //=======================
+    // using p5 to draw particles on canvas
+    //=======================
+    var _particles = [];
+    var _canvas;
+    var _context;
+    var _nullVec;
+    var _mouse;
+    // disable p5 errors handling for prod env (:perf:)
+    p5.disableFriendlyErrors = true;
+
+
+    function setup() {        
+        //create canvas and place it in header
+        _canvas = createCanvas(1000,500);
+        _canvas.parent('header-canvas');
+        _context = _canvas.drawingContext;
+
+        //create global vars
+        _nullVec = createVector(0,0);
+        _mouse = createVector(0,0);
+        //make particles
+        makeParticles(points_home, false);
+        
+    }
+
+    function makeParticles(points,drop = true) {
+        _particles = [];
+        for(let i=0,len=points.length;i<len;i++) {
+            let point = points[i];
+            let x = point.x + _canvas.width / 2 - mugshot.width/2;
+            let y = point.y;
+            let x0 = (drop)? random(x-200,x+200) : x;
+            let y0 = (drop)? 0 : y;
+            let particle = new Particle(x,y,x0,y0);
+            particle.size = point.w;
+            particle.color = 'rgba('+point.r+','+point.g+','+point.b+','+point.a+')';
+            _particles.push(particle);
+        }
+    }
+
+    function changePortrait(name) {
+
+        setTimeout(function() {            
+            makeParticles(window['points_'+name]);
+        }, 500);
+    }
+
+    function draw() {
+        // set mouse vector
+        _mouse.set(mouseX,mouseY);
+        // clear canvas
+        clear();
+        // move particles
+        for(let i=0, len=_particles.length;i<len;i++) {
+
+            let particle = _particles[i];
+            particle.behaviors();
+            particle.update();
+            particle.show();
+        }   
+    }
+
+
+
+
+
+
+
+
+
+    // handle menu events
+    $(document).ready(function(){
+
+        // main menu handle
+        $('nav.main-nav ul a').click(function(e){
+            // style menu
+            $(this).parent().parent().find('li').removeClass('active');
+            $(this).parent('li').toggleClass('active');
+            // show content
+            var target = $(this).data('target');
+            $('.content').removeClass('displayed');
+            $('#content-'+target).addClass('displayed');
+            // init first projet slider
+            if(target=='projects') {
+                $('.project:first').css('top','0px').find('.pilling').pillUp();
+            }
+            // change portrait
+            changePortrait(target);
+
+            e.preventDefault();
+            return;
+        });
+
+        // sub-menu handle
+        $('nav.sub-nav a, nav.proj-nav a').click(function(e){
+            $(this).parent().parent().find('li').removeClass('active');
+            $(this).parent('li').toggleClass('active');
+            return e.preventDefault();
+        });
+
+        // projects menu handle
+        var current_project = $('section.project:first');
+        $('nav.proj-nav a').click(function(e){
+            var name = $(this).attr('href').replace('#','');            
+            current_project.animate({'top':'100%','opacity':0},1000, function(){ $(this).css('top','-100%')});
+            current_project = $('#project-'+name);
+            current_project.animate({'top':'0%', 'opacity':1},1000).find('.pilling').pillUp();            
+        });
+
+        // contact message handle
+        $('form.contact').on('submit',function(e) {
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'GET',
+                data: $(this).serialize(),
+                success: function(data) {
+                    for(let i=0,len=data.length; i<len; i++) {
+                        let msg = "<div class='flash flash-"+data[i]['type']+"'>"+data[i]['msg']+"</div>";
+                        $('#contact-flashs').append($(msg));                        
+                    }
+                },
+            })
+
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        });
+
+    });
+    </script>
+
+</body>
+</html>

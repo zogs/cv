@@ -1,0 +1,72 @@
+    <section class='project' id="project-ypp">
+        <div class='infos'>
+            <img class='logo' src="images/projects/ypp/ypp.png" alt="">
+            <p>
+            <strong>Nom:</strong> YouProtest.com <strong>Type:</strong> Projet personnel <strong>Status:</strong> <i>Projet abandonné</i><br>
+            <strong>Description:</strong> Plateforme de manifestation en ligne participative <br>          
+            <strong>Difificulté:</strong> Performance Flash, dynamisme temps-réel, sécurité et modération de contenu...<br>
+            <strong>Rôle:</strong> Développeur principal, création backend, graphisme et design, intégration frontend, installation serveur, ...<br>
+            <strong>Date:</strong> 2010 ~ 2012<br>                
+            </p>
+        </div>
+
+        <div class="screenshots">
+             <div class="pilling">
+                <div class="section" data-title="Example de grosse manif"><img src="images/projects/ypp/shot1.jpg" alt=""></div>
+                <div class="section" data-title="Petite manif coloré"><img src="images/projects/ypp/shot2.jpg" alt=""></div>
+                <div class="section" data-title="Liste des manifs"><img src="images/projects/ypp/shot3.jpg" alt=""></div>
+                <div class="section" data-title="Participation rapide"><img src="images/projects/ypp/shot4.jpg" alt=""></div>
+                <div class="section" data-title="" data-exec-before="showManif"><div id="protest-flash"></div></div>
+            </div>                            
+        </div>
+    </section>
+
+<script type="text/javascript">
+
+function showManif() {
+
+    swfobject.embedSWF("images/projects/ypp/ypp.swf","protest-flash","100%","500px","9.0.0","",
+    {
+        screenWidth:1000,
+        screenHeight:400,
+        manifNumerus:'50000',
+        manifName:"Demonstration",
+        manifId:'1',
+        manifBackgroundColor:"0xF3F3F3",
+        userID:'',
+        userLogin:'',
+        userBonhom:'',
+        userLogged:'false',
+        userParticipe:'false',
+        userLang:'',
+        onHoverColorBonhom: 'true',
+        onlyBonhom: 'false',
+        perCentColored: 0,
+        bonhomRaining: 'true',
+        signsProtest: 'true'
+        
+    },
+    {
+        quality:"best",
+        scale:'showAll',
+        salign:'LT',
+        wmode:"opaque",
+        allowscriptaccess:"always",
+        allowfullscreen:"true",
+        allownetworking:"all"
+    }, {
+        id:"manifflash",
+        name:"manifflash"
+    },callBackSwf
+    );
+    function callBackSwf(e){
+        if(e.success==false) alert('Pardon, la démo na pas pu être chargé...');  
+        else{
+                    
+        }
+    }
+    
+}
+
+
+</script>
